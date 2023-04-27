@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -7,6 +8,9 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import PopupWithForm from "./PopupWithForm";
 import AddNewCardPopup from "./AddNewCardPopup";
 import ImagePopup from "./ImagePopup";
+import Register from "./Register";
+import Login from "./Login";
+import ProtectedRouteElement from "./ProtectedRouteElement";
 import api from "../utils/api";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 
@@ -31,6 +35,7 @@ function App() {
   const [cards, setCards] = useState([]);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [isRenderLoading, setIsRenderLoading] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false); // статус пользователя
   // открыть/закрыть попапы edit, new-card, avatar
   function handleEditPopupClick() {
     setIsEditPopupOpen(!isEditPopupOpen);
@@ -67,6 +72,10 @@ function App() {
     setSelectedCard(false);
     setIsDeletePopupOpen(false);
   }
+  // изменить статус пользователя
+  const handleLogin = () => {
+    setLoggedIn(true);
+  };
   // Взаимодействие с сервером
   // добавить информацию о пользователе с сервера
   useEffect(() => {
@@ -221,16 +230,33 @@ function App() {
       <div className="page">
         <Header />
 
-        <Main
-          onEditPopup={handleEditPopupClick}
-          onNewCardPopup={handleNewCardPopupClick}
-          onUpdateAvatarPopup={handleUpdateAvatarPopupClick}
-          onCardClick={handleCardClick}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
-          cards={cards}
-          setCards={setCards}
-        />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRouteElement
+                element={Main}
+                loggedIn={loggedIn}
+                path="/"
+                onEditPopup={handleEditPopupClick}
+                onNewCardPopup={handleNewCardPopupClick}
+                onUpdateAvatarPopup={handleUpdateAvatarPopupClick}
+                onCardClick={handleCardClick}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDelete}
+                cards={cards}
+                setCards={setCards}
+              />
+            }
+          />
+          {/* для регистрации пользователя */}
+          <Route path="/sign-up" element={<Register />} />
+          {/* для авторизации пользователя*/}
+          <Route
+            path="/sign-in"
+            element={<Login handleLogin={handleLogin} />}
+          />
+        </Routes>
 
         <Footer />
 
