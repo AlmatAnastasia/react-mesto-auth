@@ -1,0 +1,10 @@
+.header_type_pages {
+  padding-bottom: 40px;
+}
+
+@media screen and (max-width: 375px) {
+  .header_type_pages {
+    padding-bottom: 3px;
+    align-items: flex-start;
+  }
+}

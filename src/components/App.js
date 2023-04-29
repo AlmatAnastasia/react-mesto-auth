@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -8,8 +8,10 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import PopupWithForm from "./PopupWithForm";
 import AddNewCardPopup from "./AddNewCardPopup";
 import ImagePopup from "./ImagePopup";
-import Register from "./Register";
+import InfoTooltip from "./InfoTooltip";
+import Pages from "./Pages";
 import Login from "./Login";
+import Register from "./Register";
 import ProtectedRouteElement from "./ProtectedRouteElement";
 import api from "../utils/api";
 import CurrentUserContext from "../contexts/CurrentUserContext";
@@ -19,6 +21,7 @@ function App() {
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [isNewCardPopupOpen, setIsNewCardPopupOpen] = useState(false);
   const [isUpdateAvatarPopupOpen, setIsUpdateAvatarPopupOpen] = useState(false);
+  const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(true);
   const [selectedCard, setSelectedCard] = useState({
     isPopupImageOpen: false,
     link: "",
@@ -36,6 +39,14 @@ function App() {
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [isRenderLoading, setIsRenderLoading] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false); // статус пользователя
+  const [isUnauthorizedUser, setIsUnauthorizedUser] = useState(true);
+  const [isUnregisteredUser, setIsUnregisteredUser] = useState(true);
+  const [isValid, setIsValid] = useState(false);
+  const [formTitleValue, setFormTitleValue] = useState("");
+  const [formButtonValue, setFormButtonValue] = useState("");
+  function handleUnregisteredUser() {
+    setIsUnregisteredUser(!isUnregisteredUser);
+  }
   // открыть/закрыть попапы edit, new-card, avatar
   function handleEditPopupClick() {
     setIsEditPopupOpen(!isEditPopupOpen);
@@ -71,6 +82,7 @@ function App() {
     setIsUpdateAvatarPopupOpen(false);
     setSelectedCard(false);
     setIsDeletePopupOpen(false);
+    setIsInfoTooltipPopupOpen(false);
   }
   // изменить статус пользователя
   const handleLogin = () => {
@@ -228,7 +240,16 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header />
+        <Header
+          textButton={
+            isUnauthorizedUser
+              ? isUnregisteredUser
+                ? "Регистрация"
+                : "Войти"
+              : "Выйти"
+          }
+          isUnauthorizedUser={isUnauthorizedUser}
+        />
 
         <Routes>
           <Route
@@ -250,15 +271,37 @@ function App() {
             }
           />
           {/* для регистрации пользователя */}
-          <Route path="/sign-up" element={<Register />} />
+          <Route
+            path="/sign-up"
+            element={
+              <Pages
+                element={Register}
+                formTitleValue={formTitleValue}
+                setFormTitleValue={setFormTitleValue}
+                formButtonValue={formButtonValue}
+                setFormButtonValue={setFormButtonValue}
+                handleLogin={handleLogin}
+                handleUnregisteredUser={handleUnregisteredUser}
+              />
+            }
+          />
           {/* для авторизации пользователя*/}
           <Route
             path="/sign-in"
-            element={<Login handleLogin={handleLogin} />}
+            element={
+              <Pages
+                element={Login}
+                formTitleValue={formTitleValue}
+                setFormTitleValue={setFormTitleValue}
+                formButtonValue={formButtonValue}
+                setFormButtonValue={setFormButtonValue}
+                handleLogin={handleLogin}
+              />
+            }
           />
         </Routes>
 
-        <Footer />
+        {loggedIn && <Footer />}
 
         <EditProfilePopup
           textButton={isRenderLoading ? "Сохранение..." : "Сохранить"}
@@ -297,6 +340,13 @@ function App() {
           onClose={closeAllPopups}
           heading={selectedCard.heading}
           link={selectedCard.link}
+        />
+
+        <InfoTooltip
+          name="info-tooltip"
+          isValid={isValid}
+          isOpen={isInfoTooltipPopupOpen}
+          onClose={closeAllPopups}
         />
       </div>
     </CurrentUserContext.Provider>

@@ -1,3 +1,3 @@
-export default function Login() {
-  return <h1>Авторизации пользователя</h1>;
+export default function Login({ children }) {
+  return <div className="login">{children}</div>;
 }

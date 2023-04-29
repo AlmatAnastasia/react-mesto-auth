@@ -1,3 +1,13 @@
-export default function Register() {
-  return <h1>Регистрация пользователя</h1>;
+export default function Register({ children }) {
+  return (
+    <div className="register">
+      {children}
+      <div className="register__signin">
+        <p className="register__text">Уже зарегистрированы?</p>
+        <a href="/sign-in" className="register__login-link link">
+          Войти
+        </a>
+      </div>
+    </div>
+  );
 }
