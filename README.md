@@ -1,4 +1,5 @@
-# Проект: Mesto
+# react-mesto-auth
+# Проект Mesto на Реакте с авторизацией и регистрацией
 
 ---
 
@@ -20,8 +21,12 @@
 
 <div id="description"></div>
 <h2>Описание</h2>
-<p>Данный проект реализован и запущен с помощью Create React App и представляет собой сервис Mesto: интерактивную страницу, отображающую карточки с фотографиями мест. Данные корточек получены с помощью Api запросов на сервер Яндекс.Практикума. Данная версия является копией реализованного сайта на JavaScript.<br>
-В каталоге проекта его можно запустить командой 'npm start mesto-react'.</p>
+<p>Данный проект реализован и запущен с помощью Create React App и представляет собой сервис Mesto на Реакте с авторизацией и регистрацией - React-mesto-auth: интерактивную страницу, отображающую карточки с фотографиями мест. Данные корточек получены с помощью Api запросов на сервер Яндекс.Практикума. Данная версия является копией реализованного сайта на JavaScript.<br>
+В каталоге проекта его можно запустить командой 'npm start react-mesto-auth'.</p>
+
+<div id="figma"></div>
+<h2>Ссылка на макет в Figma</h2> 
+<p><a href="https://www.figma.com/file/5H3gsn5lIGPwzBPby9jAOo/Sprint-14-RU?node-id=0%3A1">Макет 1</a> - страницы авторизации и регистрации пользователя с мобильными версиями.</p>
 
 <div id="demo"></div>
 <h2>Демонстрация</h2>
@@ -72,7 +77,9 @@
 ⬥ JSX, Create React App, React Hooks<br>
 ⬥ Работа с API (метод fetch, формат JSON, методы HTTP)<br>
 ⬥ Метод HTTP (GET, POST, PUT, PATCH, DELETE)<br>
-⬥ Хуки (useState, useEffect, useRef, useContext)
+⬥ Хуки (useState, useEffect, useRef, useContext)<br>
+⬥ Навигация - React Router (Routes, Route, useNavigate, Navigate)<br>
+⬥ LocalStorage<br>
 </p>
 
 <div id="functionality"></div>
@@ -90,6 +97,9 @@
 <img src="./src/images/Demo_form_update-avatar.png" alt="Демо форма &quot;Обновить аватар&quot;" width="900">
 <p>Форма подтверждения (удалить фотографию)</p>
 <img src="./src/images/Demo_form_delete.png" alt="Демо форма &quot;Подтвердить&quot;" width="900">
+<p>Форма с информацией о регистрации (успешно или нет)</p>
+<img src="./src/images/Demo_form_infoTooltipOk.png" alt="Демо форма &quot;Подтвердить&quot;" width="900">
+<img src="./src/images/Demo_form_infoTooltipError.png" alt="Демо форма &quot;Подтвердить&quot;" width="900">
 <p>✶ Добавление карточки</p>
 <img src="./src/images/Demo_addCard_before.png" alt="Добавление карточки &quot;До&quot;" width="900"><br>
 <img src="./src/images/Demo_addCard_after.png" alt="Добавление карточки &quot;После&quot;" width="900">
@@ -110,6 +120,23 @@
 </p>Валидация формы «Обновить аватар»</p>
 <img src="./src/images/Demo_update-avatar_before.png" alt="Валидация формы &quot;Обновить аватар&quot;" width="900"><br>
 <img src="./src/images/Demo_update-avatar_after.png" alt="Валидация формы &quot;Обновить аватар&quot;" width="900">
-<p>Четыре состояния кнопки отправки формы: обычное, при наведении, disabled и ожидания ответа от сервера</p>
-<p>Закрытие попапа кликом на оверлей</p>
-<p>Закрытие попапа нажатием на Esc</p>
+<p>✶ Четыре состояния кнопки отправки формы: обычное, при наведении, disabled и ожидания ответа от сервера</p>
+<p>✶ Закрытие попапа кликом на оверлей</p>
+<p>✶ Закрытие попапа нажатием на Esc</p>
+<p>✶ Навигация по страницам:</p>
+<p>1. /signin — авторизация пользователя</p>
+<p>❆ Pазрешение - 1280 пикселей</p>
+<img src="./src/images/Demo_page_signin_1280.png" alt="Демо страницы &quot;Авторизация пользователя&quot; 1280px" width="900">
+<p>❆ Pазрешение - 320 пикселей</p>
+<img src="./src/images/Demo_page_signin_320.png" alt="Демо страницы &quot;Авторизация пользователя&quot; 320px" width="900">
+<p>2. /signup — регистрация пользователя</p>
+<p>❆ Pазрешение - 1280 пикселей</p>
+<img src="./src/images/Demo_page_signup_1280.png" alt="Демо страницы &quot;Регистрация пользователя&quot; 1280px" width="900">
+<p>❆ Pазрешение - 320 пикселей</p>
+<img src="./src/images/Demo_page_signup_320.png" alt="Демо страницы &quot;Регистрация пользователя&quot; 320px" width="900">
+<p>3. / — основная функциональность приложения</p>
+<p>❆ Pазрешение - 1280 пикселей</p>
+<img src="./src/images/Demo_page_main_1280.png" alt="Демо страницы &quot;Основная функциональность приложения&quot; 1280px" width="900">
+<p>❆ Pазрешение - 320 пикселей</p>
+<img src="./src/images/Demo_page_main_320.png" alt="Демо страницы &quot;Основная функциональность приложения&quot; 320px" width="900">
+<p>✶ Регистрация и авторизация пользователя</p>

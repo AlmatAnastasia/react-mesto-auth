@@ -21,19 +21,28 @@
 
 /* подключаем стили блока header */
 @import url("./blocks/header/header.css");
-@import url("./blocks/header/_type_pages/header_type_pages.css");
+@import url("./blocks/header/_type_logged/header_type_logged.css");
+@import url("./blocks/header/__container-logo/header__container-logo.css");
+@import url("./blocks/header/__container-logo_type_logged/header__container-logo_type_logged.css");
 @import url("./blocks/header/__logo/header__logo.css");
-@import url("./blocks/header/__logo/_type_pages/header__logo_type_pages.css");
+@import url("./blocks/header/__logo/_type_logged/header__logo_type_logged.css");
+@import url("./blocks/header/__close-button/header__close-button.css");
+@import url("./blocks/header/__close-button_type_logged/header__close-button_type_logged.css");
+@import url("./blocks/header/__container-user/_type_logged/header__container-user_type_logged.css");
+@import url("./blocks/header/__email/_type_logged/header__email_type_logged.css");
 @import url("./blocks/header/__app-login-button/header__app-login-button.css");
+@import url("./blocks/header/__app-login-button/_type_logged/header__app-login-button_type_logged.css");
 
 /* подключаем стили блока main */
 @import url("./blocks/main/main.css");
 
 /* подключаем стили блока profile */
 @import url("./blocks/profile/profile.css");
+@import url("./blocks/profile/_type_logged/profile_type_logged.css");
 @import url("./blocks/profile/__avatar-edit-button/profile__avatar-edit-button.css");
 @import url("./blocks/profile/__avatar/profile__avatar.css");
 @import url("./blocks/profile/__intro/profile__intro.css");
+@import url("./blocks/profile/__intro/_type_logged/profile__intro_type_logged.css");
 @import url("./blocks/profile/__intro-title/profile__intro-title.css");
 @import url("./blocks/profile/__intro-edit-button/profile__intro-edit-button.css");
 @import url("./blocks/profile/__intro-text/profile__intro-text.css");
@@ -86,9 +95,9 @@
 @import url("./blocks/form/__input/form__input.css");
 @import url("./blocks/form/__input/_type_error/form__input_type_error.css");
 @import url("./blocks/form/__input-error/form__input-error.css");
-@import url("./blocks/form/__button/form__button.css");
-@import url("./blocks/form/__button/_type_register/form__button_type_register.css");
-@import url("./blocks/form/__button/_disabled/form__button_disabled.css");
+@import url("./blocks/form/__button-submit/form__button-submit.css");
+@import url("./blocks/form/__button-submit/_type_register/form__button-submit_type_register.css");
+@import url("./blocks/form/__button-submit/_disabled/form__button-submit_disabled.css");
 
 /* подключаем стили блока register */
 @import url("./blocks/register/__signin/register__signin.css");

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -13,15 +13,16 @@ import Pages from "./Pages";
 import Login from "./Login";
 import Register from "./Register";
 import ProtectedRouteElement from "./ProtectedRouteElement";
-import api from "../utils/api";
 import CurrentUserContext from "../contexts/CurrentUserContext";
+import api from "../utils/api";
+import { register, authorize, checkToken } from "../utils/apiAuth";
 
 function App() {
   // переменные состояния
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [isNewCardPopupOpen, setIsNewCardPopupOpen] = useState(false);
   const [isUpdateAvatarPopupOpen, setIsUpdateAvatarPopupOpen] = useState(false);
-  const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(true);
+  const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState({
     isPopupImageOpen: false,
     link: "",
@@ -39,15 +40,34 @@ function App() {
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [isRenderLoading, setIsRenderLoading] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false); // статус пользователя
-  const [isUnauthorizedUser, setIsUnauthorizedUser] = useState(true);
-  const [isUnregisteredUser, setIsUnregisteredUser] = useState(true);
-  const [isValid, setIsValid] = useState(false);
+  const [textButtonHeader, setTextButtonHeader] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [isValidPage, setIsValidPage] = useState("");
   const [formTitleValue, setFormTitleValue] = useState("");
   const [formButtonValue, setFormButtonValue] = useState("");
-  function handleUnregisteredUser() {
-    setIsUnregisteredUser(!isUnregisteredUser);
+  const navigate = useNavigate();
+  // изменить статус пользователя (авторизация)
+  function handleLogin() {
+    setLoggedIn(true);
   }
-  // открыть/закрыть попапы edit, new-card, avatar
+  // проверка наличия токена и его валидности
+  const handleTokenCheck = () => {
+    /* проверить, существует ли токен в хранилище браузера*/
+    if (localStorage.getItem("jwt")) {
+      // присвоить токен переменной jwt
+      const jwt = localStorage.getItem("jwt");
+      checkToken(jwt).then((res) => {
+        if (res) {
+          setLoggedIn(true);
+          // перенаправить на страницу /
+          setTextButtonHeader("Выход");
+          navigate("/", { replace: true });
+        }
+      });
+    }
+  };
+  // открыть/закрыть попапы edit, new-card, avatar, info-tooltip
   function handleEditPopupClick() {
     setIsEditPopupOpen(!isEditPopupOpen);
   }
@@ -56,6 +76,9 @@ function App() {
   }
   function handleUpdateAvatarPopupClick() {
     setIsUpdateAvatarPopupOpen(!isUpdateAvatarPopupOpen);
+  }
+  function handleInfoTooltipPopupClick() {
+    setIsInfoTooltipPopupOpen(!isInfoTooltipPopupOpen);
   }
   // открыть/закрыть попап image
   function handleCardClick(data) {
@@ -66,6 +89,72 @@ function App() {
   function handlePopupDeleteSubmit(e) {
     e.preventDefault();
     deleteOldCard(cardDelete);
+  }
+  // переадресовать пользователя на на страницу /sign-up
+  function onRegister() {
+    setTextButtonHeader("Войти");
+    setFormTitleValue("Регистрация");
+    setFormButtonValue("Зарегистрироваться");
+    navigate("/sign-up", { replace: true });
+  }
+  // переадресовать пользователя на на страницу /
+  function onLogin() {
+    if (loggedIn) {
+      setTextButtonHeader("Выход");
+      navigate("/", { replace: true });
+    } else {
+      setTextButtonHeader("Регистрация");
+      setFormTitleValue("Вход");
+      setFormButtonValue("Войти");
+      navigate("/sign-in", { replace: true });
+    }
+  }
+  // удалить токен из localStorage
+  // переадресовать пользователя на страницу /sign-in
+  function signOut() {
+    setLoggedIn(false);
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("userEmail");
+    setTextButtonHeader("Регистрация");
+    navigate("/sign-in", { replace: true });
+  }
+  // регистрация пользователя
+  function registerUser(inputEmail, inputPassword) {
+    register(inputEmail, inputPassword).then((res) => {
+      if (res === 400) {
+        handleInfoTooltipPopupClick();
+        setIsValidPage("infoTooltipError");
+      } else {
+        handleInfoTooltipPopupClick();
+        setIsValidPage("infoTooltipOk");
+        onLogin();
+      }
+    });
+  }
+  // авторизация пользователя
+  function authorizeUser(inputEmail, inputPassword) {
+    authorize(inputEmail, inputPassword).then((res) => {
+      // сохранить токен в localStorage
+      localStorage.setItem("jwt", res.token);
+      handleLogin();
+      navigate(0);
+      onLogin();
+    });
+    checkToken(localStorage.getItem("jwt")).then((res) => {
+      setUserEmail(res.data.email);
+    });
+  }
+  // обработка отправки формы формы страницы (Register/Login)
+  function handlePageSubmit(inputEmail, inputPassword, conditionForLogin) {
+    return (e) => {
+      e.preventDefault();
+      setUserEmail(inputEmail);
+      setUserPassword(inputPassword);
+      localStorage.setItem("userEmail", inputEmail);
+      conditionForLogin === false
+        ? registerUser(inputEmail, inputPassword)
+        : authorizeUser(inputEmail, inputPassword);
+    };
   }
   // удалить карточку
   function handleCardDelete(card) {
@@ -84,14 +173,13 @@ function App() {
     setIsDeletePopupOpen(false);
     setIsInfoTooltipPopupOpen(false);
   }
-  // изменить статус пользователя
-  const handleLogin = () => {
-    setLoggedIn(true);
-  };
   // Взаимодействие с сервером
   // добавить информацию о пользователе с сервера
   useEffect(() => {
     // эффект при монтировании
+    setTextButtonHeader("Регистрация");
+    // проверка наличия токена и его валидности
+    handleTokenCheck();
     api
       .getProfileInfo()
       .then((info) => {
@@ -241,17 +329,17 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <Header
-          textButton={
-            isUnauthorizedUser
-              ? isUnregisteredUser
-                ? "Регистрация"
-                : "Войти"
-              : "Выйти"
-          }
-          isUnauthorizedUser={isUnauthorizedUser}
+          textButton={textButtonHeader}
+          loggedIn={loggedIn}
+          userEmail={userEmail}
+          onLogin={onLogin}
+          onRegister={onRegister}
+          signOut={signOut}
+          onClose={closeAllPopups}
         />
 
         <Routes>
+          {/* / — любой URL, кроме /signup и /signin защищены авторизацией*/}
           <Route
             path="/"
             element={
@@ -270,7 +358,7 @@ function App() {
               />
             }
           />
-          {/* для регистрации пользователя */}
+          {/* /sign-up — регистрация пользователя */}
           <Route
             path="/sign-up"
             element={
@@ -280,12 +368,15 @@ function App() {
                 setFormTitleValue={setFormTitleValue}
                 formButtonValue={formButtonValue}
                 setFormButtonValue={setFormButtonValue}
-                handleLogin={handleLogin}
-                handleUnregisteredUser={handleUnregisteredUser}
+                handleSubmit={handlePageSubmit}
+                userEmail={userEmail}
+                userPassword={userPassword}
+                onLogin={onLogin}
+                onRegister={onRegister}
               />
             }
           />
-          {/* для авторизации пользователя*/}
+          {/* /sign-in — авторизация пользователя */}
           <Route
             path="/sign-in"
             element={
@@ -295,8 +386,22 @@ function App() {
                 setFormTitleValue={setFormTitleValue}
                 formButtonValue={formButtonValue}
                 setFormButtonValue={setFormButtonValue}
-                handleLogin={handleLogin}
+                handleSubmit={handlePageSubmit}
+                userEmail={userEmail}
+                userPassword={userPassword}
+                onLogin={onLogin}
+                onRegister={onRegister}
               />
+            }
+          />
+          <Route
+            path="*"
+            element={
+              loggedIn ? (
+                <Navigate to="/" replace />
+              ) : (
+                <Navigate to="/sign-in" replace />
+              )
             }
           />
         </Routes>
@@ -344,7 +449,7 @@ function App() {
 
         <InfoTooltip
           name="info-tooltip"
-          isValid={isValid}
+          isValidPage={isValidPage}
           isOpen={isInfoTooltipPopupOpen}
           onClose={closeAllPopups}
         />

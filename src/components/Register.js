@@ -1,3 +1,4 @@
+// компонент регистрации пользователя
 export default function Register({ children }) {
   return (
     <div className="register">
