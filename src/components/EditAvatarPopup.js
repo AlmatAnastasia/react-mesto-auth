@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import PopupWithForm from "./PopupWithForm";
 import { useFormAndValidation } from "../hooks/useFormAndValidation";
-import { inputDescriptionUrl as inputName } from "../utils/utils.js";
-import { conditionForClassList, inputDescriptionUrl } from "../utils/utils.js";
+import {
+  conditionForClassList,
+  inputDescriptionUrlSelector,
+} from "../utils/utils.js";
 export default function EditAvatarPopup({
   textButton,
   isOpen,
@@ -14,7 +16,7 @@ export default function EditAvatarPopup({
     useFormAndValidation();
   // наличие текста ошибки для каждого из полей
   const conditionForClassListDescription = conditionForClassList(
-    errors[inputDescriptionUrl]
+    errors[inputDescriptionUrlSelector]
   );
   // очистка полей при монтировании
   useEffect(() => {
@@ -26,7 +28,7 @@ export default function EditAvatarPopup({
     e.preventDefault();
     // передать значения управляемых компонентов во внешний обработчик
     onUpdateAvatar({
-      avatar: values[inputName],
+      avatar: values[inputDescriptionUrlSelector],
     });
   }
   return (
@@ -49,7 +51,7 @@ export default function EditAvatarPopup({
               conditionForClassListDescription && "popup__input_type_error"
             }`}
             placeholder="Ссылка на новое изображение аватара"
-            value={values[inputName] || ""}
+            value={values[inputDescriptionUrlSelector] || ""}
             onChange={handleChange}
             required
           />
@@ -58,7 +60,7 @@ export default function EditAvatarPopup({
               conditionForClassListDescription && "popup__input-error"
             }`}
           >
-            {errors[inputName]}
+            {errors[inputDescriptionUrlSelector]}
           </span>
         </div>
       </fieldset>

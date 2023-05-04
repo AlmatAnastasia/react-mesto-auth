@@ -4,8 +4,8 @@ import CurrentUserContext from "../contexts/CurrentUserContext";
 import { useFormAndValidation } from "../hooks/useFormAndValidation";
 import {
   conditionForClassList,
-  inputNameText,
-  inputDescriptionText,
+  inputNameTextSelector,
+  inputDescriptionTextSelector,
 } from "../utils/utils.js";
 export default function EditProfilePopup({
   textButton,
@@ -18,10 +18,10 @@ export default function EditProfilePopup({
   // валидация
   const { values, handleChange, errors, isValid, setValues, resetForm } =
     useFormAndValidation();
-  const inputName = values[inputNameText];
-  const inputDescription = values[inputDescriptionText];
-  const errorsInputName = errors[inputNameText];
-  const errorsInputDescription = errors[inputDescriptionText];
+  const inputName = values[inputNameTextSelector];
+  const inputDescription = values[inputDescriptionTextSelector];
+  const errorsInputName = errors[inputNameTextSelector];
+  const errorsInputDescription = errors[inputDescriptionTextSelector];
   // наличие текста ошибки для каждого из полей
   const conditionForClassListName = conditionForClassList(errorsInputName);
   const conditionForClassListDescription = conditionForClassList(
@@ -31,8 +31,8 @@ export default function EditProfilePopup({
   useEffect(() => {
     resetForm();
     setValues({
-      [inputNameText]: currentUser.name,
-      [inputDescriptionText]: currentUser.about,
+      [inputNameTextSelector]: currentUser.name,
+      [inputDescriptionTextSelector]: currentUser.about,
     });
   }, [resetForm, setValues, currentUser, isOpen]);
   // обработка отправки формы

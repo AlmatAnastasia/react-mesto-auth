@@ -1,7 +1,8 @@
 import infoTooltipOk from "../images/popup-info-tooltip-ok.svg";
 import infoTooltipError from "../images/popup-info-tooltip-error.svg";
-
-export default function InfoTooltip({ name, isValid, isOpen, onClose }) {
+// InfoTooltip — компонент модального окна,
+// который информирует пользователя об успешной (или не очень) регистрации
+export default function InfoTooltip({ name, isValidPage, isOpen, onClose }) {
   const popupClassList = `popup popup_type_${name} ${isOpen && "popup_opened"}`;
   return (
     <div className={popupClassList}>
@@ -13,11 +14,17 @@ export default function InfoTooltip({ name, isValid, isOpen, onClose }) {
         >
           <img
             className="popup__image-info-tooltip"
-            src={isValid ? infoTooltipOk : infoTooltipError}
+            src={
+              isValidPage === "infoTooltipOk"
+                ? infoTooltipOk
+                : isValidPage === "infoTooltipError"
+                ? infoTooltipError
+                : ""
+            }
             alt='Изображение "Информационная всплывающая подсказка"'
           />
           <h3 className="popup__heading popup__heading_type_info-tooltip">
-            {isValid
+            {isValidPage === "infoTooltipOk"
               ? "Вы успешно зарегистрировались!"
               : `Что-то пошло не так! Попробуйте ещё раз.`}
           </h3>

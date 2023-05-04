@@ -8,6 +8,8 @@ export const dataApi = {
 
 export const conditionForClassList = (errors) =>
   errors !== undefined && errors !== "";
-export const inputDescriptionUrl = "popup__input_type_description-url";
-export const inputNameText = "popup__input_type_name-text";
-export const inputDescriptionText = "popup__input_type_description-text";
+export const inputDescriptionUrlSelector = "popup__input_type_description-url";
+export const inputNameTextSelector = "popup__input_type_name-text";
+export const inputDescriptionTextSelector = "popup__input_type_description-text";
+export const inputEmailSelector = "form__input_type_email";
+export const inputPasswordSelector = "form__input_type_password";

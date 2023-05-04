@@ -1,8 +1,0 @@
-.form__button_disabled {
-  color: #c5c5c5;
-  border: 1px solid #c5c5c5;
-}
-
-.form__button_disabled:hover {
-  background-color: inherit;
-}

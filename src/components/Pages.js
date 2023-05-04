@@ -1,41 +1,46 @@
 import { useEffect } from "react";
 import { useFormAndValidation } from "../hooks/useFormAndValidation";
-import { conditionForClassList } from "../utils/utils.js";
+import {
+  conditionForClassList,
+  inputEmailSelector,
+  inputPasswordSelector,
+} from "../utils/utils.js";
+// общий компонент для авторизации и регистрации пользователя
 const Pages = ({ element: Component, ...props }) => {
   // валидация
   const { values, handleChange, errors, isValid, setValues, resetForm } =
     useFormAndValidation();
-  const inputEmail = values["form__input_type_email"];
-  const inputPassword = values["form__input_type_password"];
-  const errorsInputEmail = errors["form__input_type_email"];
-  const errorsInputPassword = errors["form__input_type_password"];
+  const inputEmail = values[inputEmailSelector];
+  const inputPassword = values[inputPasswordSelector];
+  const errorsInputEmail = errors[inputEmailSelector];
+  const errorsInputPassword = errors[inputPasswordSelector];
   // наличие текста ошибки для каждого из полей
   const conditionForClassListEmail = conditionForClassList(errorsInputEmail);
   const conditionForClassListPassword =
     conditionForClassList(errorsInputPassword);
-  // обработка отправки формы
-  function handleSubmit(e) {
-    e.preventDefault();
-  }
   // условие для страницы авторизации
   const conditionForLogin = () => Component.name === "Login";
   // изменение данных при монтировании (авторизация/регистрация)
   useEffect(() => {
     resetForm();
-    setValues({});
-    if (conditionForLogin() === true) {
-      props.setFormTitleValue("Вход");
-      props.setFormButtonValue("Войти");
-    } else {
-      props.setFormTitleValue("Регистрация");
-      props.setFormButtonValue("Зарегистрироваться");
-      props.handleUnregisteredUser();
-    }
+    setValues({
+      [inputEmailSelector]: props.userEmail,
+      [inputPasswordSelector]: props.userPassword,
+    });
+    props.setFormTitleValue("Вход");
+    props.setFormButtonValue("Войти");
   }, []);
   // общие данные страниц авторизации и регистрации
   const pageElements = () => {
     return (
-      <form className="form" onSubmit={handleSubmit}>
+      <form
+        className="form"
+        onSubmit={props.handleSubmit(
+          inputEmail,
+          inputPassword,
+          conditionForLogin()
+        )}
+      >
         <h1 className="form__title">{props.formTitleValue}</h1>
         <div className="form__ceil">
           <input
@@ -84,15 +89,18 @@ const Pages = ({ element: Component, ...props }) => {
           </span>
         </div>
         <button
-          type="button"
-          name="form-button"
+          type="submit"
+          name="form-button-submit"
           aria-label={`Кнопка действия &quot;${props.formButtonValue}&quot;`}
-          className={`form__button ${
-            !conditionForLogin() && "form__button_type_register"
+          className={`form__button-submit ${
+            !conditionForLogin() && "form__button-submit_type_register"
           } ${
-            isValid ? "indicator" : "form__button_disabled indicator_disabled"
+            isValid
+              ? "indicator"
+              : "form__button-submit_disabled indicator_disabled"
           }`}
           disabled={isValid ? false : true}
+          onClick={conditionForLogin() ? props.onLogin : props.onRegister}
         >
           {props.formButtonValue}
         </button>

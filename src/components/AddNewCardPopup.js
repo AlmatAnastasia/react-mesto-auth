@@ -3,8 +3,8 @@ import PopupWithForm from "./PopupWithForm";
 import { useFormAndValidation } from "../hooks/useFormAndValidation";
 import {
   conditionForClassList,
-  inputNameText,
-  inputDescriptionUrl,
+  inputNameTextSelector,
+  inputDescriptionUrlSelector,
 } from "../utils/utils.js";
 export default function AddNewCardPopup({
   textButton,
@@ -15,10 +15,10 @@ export default function AddNewCardPopup({
   // валидация
   const { values, handleChange, errors, isValid, setValues, resetForm } =
     useFormAndValidation();
-  const inputName = values[inputNameText];
-  const inputDescription = values[inputDescriptionUrl];
-  const errorsInputName = errors[inputNameText];
-  const errorsInputDescription = errors[inputDescriptionUrl];
+  const inputName = values[inputNameTextSelector];
+  const inputDescription = values[inputDescriptionUrlSelector];
+  const errorsInputName = errors[inputNameTextSelector];
+  const errorsInputDescription = errors[inputDescriptionUrlSelector];
   // наличие текста ошибки для каждого из полей
   const conditionForClassListName = conditionForClassList(errorsInputName);
   const conditionForClassListDescription = conditionForClassList(

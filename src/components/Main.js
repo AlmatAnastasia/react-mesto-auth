@@ -3,6 +3,8 @@ import Card from "./Card";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 
 export default function Main({
+  loggedIn,
+  path,
   onEditPopup,
   onNewCardPopup,
   onUpdateAvatarPopup,
@@ -16,7 +18,10 @@ export default function Main({
   return (
     <main className="main">
       {/* Блок 2 profile */}
-      <section className="profile" id={id}>
+      <section
+        className={`profile ${loggedIn && "profile_type_logged"}`}
+        id={id}
+      >
         <button
           type="button"
           name="edit-button"
@@ -30,7 +35,11 @@ export default function Main({
             alt='Изображение "Аватар профиля"'
           />
         </button>
-        <div className="profile__intro">
+        <div
+          className={`profile__intro ${
+            loggedIn && "profile__intro_type_logged"
+          }`}
+        >
           <h1 className="profile__intro-title much-text">{name}</h1>
           <button
             type="button"
@@ -45,7 +54,9 @@ export default function Main({
           type="button"
           name="add-button"
           aria-label='Кнопка "Добавить"'
-          className="profile__add-button indicator"
+          className={`profile__add-button indicator ${
+            loggedIn && "profile__add-button_type_logged"
+          }`}
           onClick={onNewCardPopup}
         ></button>
       </section>
