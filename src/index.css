@@ -100,4 +100,7 @@
 @import url("./blocks/form/__button-submit/_disabled/form__button-submit_disabled.css");
 
 /* подключаем стили блока register */
-@import url("./blocks/register/__signin/register__signin.css");
+@import url("./blocks/register/__signup/register__signup.css");
+
+/* подключаем стили блока login */
+@import url("./blocks/login/__signin/login__signin.css");

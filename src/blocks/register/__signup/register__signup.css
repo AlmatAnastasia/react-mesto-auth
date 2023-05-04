@@ -1,4 +1,4 @@
-.register__signin {
+.register__signup {
   margin: 0 auto 67px auto;
   min-width: 358px;
   display: flex;
@@ -12,7 +12,7 @@
 }
 
 @media screen and (max-width: 375px) {
-  .register__signin {
+  .register__signup {
     margin: 6px auto 26px auto;
     min-width: 260px;
   }

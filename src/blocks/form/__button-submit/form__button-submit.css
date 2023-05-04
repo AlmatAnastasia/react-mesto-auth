@@ -2,7 +2,7 @@
   padding: 0;
   min-width: 358px;
   min-height: 50px;
-  margin: 189px auto 112px auto;
+  margin: 189px auto 0 auto;
   font-style: normal;
   font-weight: 400;
   font-size: 1.125rem;
@@ -15,7 +15,7 @@
 
 @media screen and (max-width: 375px) {
   .form__button-submit {
-    margin: 146px auto 77px auto;
+    margin: 146px auto 0 auto;
     min-width: 260px;
     min-height: 46px;
     font-style: normal;
