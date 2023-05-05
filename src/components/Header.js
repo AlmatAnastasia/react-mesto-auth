@@ -3,7 +3,6 @@ import headerLogo from "../images/header-logo.svg";
 export default function Header({
   textButton,
   loggedIn,
-  userEmail,
   onLogin,
   onRegister,
   signOut,

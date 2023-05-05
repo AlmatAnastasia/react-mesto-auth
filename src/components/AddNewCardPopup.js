@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import PopupWithForm from "./PopupWithForm";
+import Popup from "./Popup";
 import { useFormAndValidation } from "../hooks/useFormAndValidation";
 import {
   conditionForClassList,
@@ -12,6 +12,9 @@ export default function AddNewCardPopup({
   onClose,
   onAddNewCard,
 }) {
+  // данные формы
+  const name = "new-card";
+  const title = "Новое место";
   // валидация
   const { values, handleChange, errors, isValid, setValues, resetForm } =
     useFormAndValidation();
@@ -38,61 +41,72 @@ export default function AddNewCardPopup({
     });
   }
   return (
-    <PopupWithForm
-      name="new-card"
-      title="Новое место"
-      textButton={textButton}
-      isOpen={isOpen}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-      isValid={isValid}
-    >
-      <fieldset className="popup__info">
-        <div className="popup__cell">
-          <input
-            type="text"
-            id="popup-new-card-name-text"
-            name="popup__input_type_name-text"
-            className={`popup__input popup__input_type_name-text ${
-              conditionForClassListName && "popup__input_type_error"
-            }`}
-            placeholder="Название"
-            minLength="2"
-            maxLength="30"
-            value={inputName || ""}
-            onChange={handleChange}
-            required
-          />
-          <span
-            className={`popup-new-card-name-text-error ${
-              conditionForClassListName && "popup__input-error"
-            }`}
-          >
-            {errorsInputName}
-          </span>
-        </div>
-        <div className="popup__cell">
-          <input
-            type="url"
-            id="popup-new-card-description-url"
-            name="popup__input_type_description-url"
-            className={`popup__input popup__input_type_description-url ${
-              conditionForClassListDescription && "popup__input_type_error"
-            }`}
-            placeholder="Ссылка на картинку"
-            value={inputDescription || ""}
-            onChange={handleChange}
-            required
-          />
-          <span
-            className={`popup-new-card-description-url-error ${
-              conditionForClassListDescription && "popup__input-error"
-            }`}
-          >
-            {errorsInputDescription}
-          </span>
-        </div>
-      </fieldset>
-    </PopupWithForm>
+    <Popup isOpen={isOpen} name={name} onClose={onClose}>
+      <form
+        name={`popup-form_type_${name}`}
+        className="popup__form"
+        onSubmit={handleSubmit}
+        noValidate
+      >
+        <h3 className="popup__heading">{title}</h3>
+        <fieldset className="popup__info">
+          <div className="popup__cell">
+            <input
+              type="text"
+              id="popup-new-card-name-text"
+              name="popup__input_type_name-text"
+              className={`popup__input popup__input_type_name-text ${
+                conditionForClassListName && "popup__input_type_error"
+              }`}
+              placeholder="Название"
+              minLength="2"
+              maxLength="30"
+              value={inputName || ""}
+              onChange={handleChange}
+              required
+            />
+            <span
+              className={`popup-new-card-name-text-error ${
+                conditionForClassListName && "popup__input-error"
+              }`}
+            >
+              {errorsInputName}
+            </span>
+          </div>
+          <div className="popup__cell">
+            <input
+              type="url"
+              id="popup-new-card-description-url"
+              name="popup__input_type_description-url"
+              className={`popup__input popup__input_type_description-url ${
+                conditionForClassListDescription && "popup__input_type_error"
+              }`}
+              placeholder="Ссылка на картинку"
+              value={inputDescription || ""}
+              onChange={handleChange}
+              required
+            />
+            <span
+              className={`popup-new-card-description-url-error ${
+                conditionForClassListDescription && "popup__input-error"
+              }`}
+            >
+              {errorsInputDescription}
+            </span>
+          </div>
+        </fieldset>
+        <button
+          type="submit"
+          name="submit"
+          aria-label={`Кнопка отправки формы &quot;${textButton}&quot;`}
+          className={`popup__submit ${
+            isValid ? "indicator" : "popup__submit_disabled indicator_disabled"
+          }`}
+          disabled={isValid ? false : true}
+        >
+          {textButton}
+        </button>
+      </form>
+    </Popup>
   );
 }

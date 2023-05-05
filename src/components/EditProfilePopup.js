@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import PopupWithForm from "./PopupWithForm";
+import Popup from "./Popup";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 import { useFormAndValidation } from "../hooks/useFormAndValidation";
 import {
@@ -13,6 +13,9 @@ export default function EditProfilePopup({
   onClose,
   onUpdateUser,
 }) {
+  // данные формы
+  const name = "edit";
+  const title = "Редактировать профиль";
   // данные текущего пользователя
   const currentUser = useContext(CurrentUserContext);
   // валидация
@@ -46,63 +49,74 @@ export default function EditProfilePopup({
   }
 
   return (
-    <PopupWithForm
-      name="edit"
-      title="Редактировать профиль"
-      textButton={textButton}
-      isOpen={isOpen}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-      isValid={isValid}
-    >
-      <fieldset className="popup__info">
-        <div className="popup__cell">
-          <input
-            type="text"
-            id="popup-edit-name-text"
-            name="popup__input_type_name-text"
-            className={`popup__input popup__input_type_name-text ${
-              conditionForClassListName && "popup__input_type_error"
-            }`}
-            placeholder="Имя"
-            minLength="2"
-            maxLength="40"
-            value={inputName || ""}
-            onChange={handleChange}
-            required
-          />
-          <span
-            className={`popup-edit-name-text-error ${
-              conditionForClassListName && "popup__input-error"
-            }`}
-          >
-            {errorsInputName}
-          </span>
-        </div>
-        <div className="popup__cell">
-          <input
-            type="text"
-            id="popup-edit-description-text"
-            name="popup__input_type_description-text"
-            className={`popup__input popup__input_type_description-text ${
-              conditionForClassListDescription && "popup__input_type_error"
-            }`}
-            placeholder="О себе"
-            minLength="2"
-            maxLength="200"
-            value={inputDescription || ""}
-            onChange={handleChange}
-            required
-          />
-          <span
-            className={`popup-edit-description-text-error ${
-              conditionForClassListDescription && "popup__input-error"
-            }`}
-          >
-            {errorsInputDescription}
-          </span>
-        </div>
-      </fieldset>
-    </PopupWithForm>
+    <Popup isOpen={isOpen} name={name} onClose={onClose}>
+      <form
+        name={`popup-form_type_${name}`}
+        className="popup__form"
+        onSubmit={handleSubmit}
+        noValidate
+      >
+        <h3 className="popup__heading">{title}</h3>
+        <fieldset className="popup__info">
+          <div className="popup__cell">
+            <input
+              type="text"
+              id="popup-edit-name-text"
+              name="popup__input_type_name-text"
+              className={`popup__input popup__input_type_name-text ${
+                conditionForClassListName && "popup__input_type_error"
+              }`}
+              placeholder="Имя"
+              minLength="2"
+              maxLength="40"
+              value={inputName || ""}
+              onChange={handleChange}
+              required
+            />
+            <span
+              className={`popup-edit-name-text-error ${
+                conditionForClassListName && "popup__input-error"
+              }`}
+            >
+              {errorsInputName}
+            </span>
+          </div>
+          <div className="popup__cell">
+            <input
+              type="text"
+              id="popup-edit-description-text"
+              name="popup__input_type_description-text"
+              className={`popup__input popup__input_type_description-text ${
+                conditionForClassListDescription && "popup__input_type_error"
+              }`}
+              placeholder="О себе"
+              minLength="2"
+              maxLength="200"
+              value={inputDescription || ""}
+              onChange={handleChange}
+              required
+            />
+            <span
+              className={`popup-edit-description-text-error ${
+                conditionForClassListDescription && "popup__input-error"
+              }`}
+            >
+              {errorsInputDescription}
+            </span>
+          </div>
+        </fieldset>
+        <button
+          type="submit"
+          name="submit"
+          aria-label={`Кнопка отправки формы &quot;${textButton}&quot;`}
+          className={`popup__submit ${
+            isValid ? "indicator" : "popup__submit_disabled indicator_disabled"
+          }`}
+          disabled={isValid ? false : true}
+        >
+          {textButton}
+        </button>
+      </form>
+    </Popup>
   );
 }

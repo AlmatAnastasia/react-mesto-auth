@@ -5,7 +5,7 @@ import Main from "./Main";
 import Footer from "./Footer";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
-import PopupWithForm from "./PopupWithForm";
+import Popup from "./Popup";
 import AddNewCardPopup from "./AddNewCardPopup";
 import ImagePopup from "./ImagePopup";
 import InfoTooltip from "./InfoTooltip";
@@ -41,11 +41,9 @@ function App() {
   const [isRenderLoading, setIsRenderLoading] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false); // статус пользователя
   const [textButtonHeader, setTextButtonHeader] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userPassword, setUserPassword] = useState("");
   const [isValidPage, setIsValidPage] = useState("");
   const [formTitleValue, setFormTitleValue] = useState("");
-  const [formButtonValue, setFormButtonValue] = useState("");
+  const [resetForm, setResetForm] = useState({});
   const navigate = useNavigate();
   // изменить статус пользователя (авторизация)
   function handleLogin() {
@@ -57,14 +55,16 @@ function App() {
     if (localStorage.getItem("jwt")) {
       // присвоить токен переменной jwt
       const jwt = localStorage.getItem("jwt");
-      checkToken(jwt).then((res) => {
-        if (res) {
-          setLoggedIn(true);
-          // перенаправить на страницу /
-          setTextButtonHeader("Выход");
-          navigate("/", { replace: true });
-        }
-      });
+      checkToken(jwt)
+        .then((res) => {
+          if (res) {
+            setLoggedIn(true);
+            // перенаправить на страницу /
+            setTextButtonHeader("Выход");
+            navigate("/", { replace: true });
+          }
+        })
+        .catch((error) => console.log(`${error}. Запрос не выполнен!`)); // вывести ошибку в консоль
     }
   };
   // открыть/закрыть попапы edit, new-card, avatar, info-tooltip
@@ -90,22 +90,22 @@ function App() {
     e.preventDefault();
     deleteOldCard(cardDelete);
   }
-  // переадресовать пользователя на на страницу /sign-up
+  // переадресовать пользователя на страницу /sign-up
   function onRegister() {
+    resetForm.resetForm();
     setTextButtonHeader("Войти");
     setFormTitleValue("Регистрация");
-    setFormButtonValue("Зарегистрироваться");
     navigate("/sign-up", { replace: true });
   }
-  // переадресовать пользователя на на страницу /
+  // переадресовать пользователя на страницу /
   function onLogin() {
+    resetForm.resetForm();
     if (loggedIn) {
       setTextButtonHeader("Выход");
       navigate("/", { replace: true });
     } else {
       setTextButtonHeader("Регистрация");
       setFormTitleValue("Вход");
-      setFormButtonValue("Войти");
       navigate("/sign-in", { replace: true });
     }
   }
@@ -118,44 +118,61 @@ function App() {
     setTextButtonHeader("Регистрация");
     navigate("/sign-in", { replace: true });
   }
+  // обработка отправки формы формы страницы Register
   // регистрация пользователя
-  function registerUser(inputEmail, inputPassword) {
-    register(inputEmail, inputPassword).then((res) => {
-      if (res === 400) {
-        handleInfoTooltipPopupClick();
-        setIsValidPage("infoTooltipError");
-      } else {
-        handleInfoTooltipPopupClick();
-        setIsValidPage("infoTooltipOk");
-        onLogin();
-      }
-    });
-  }
-  // авторизация пользователя
-  function authorizeUser(inputEmail, inputPassword) {
-    authorize(inputEmail, inputPassword).then((res) => {
-      // сохранить токен в localStorage
-      localStorage.setItem("jwt", res.token);
-      handleLogin();
-      navigate(0);
-      onLogin();
-    });
-    checkToken(localStorage.getItem("jwt")).then((res) => {
-      setUserEmail(res.data.email);
-    });
-  }
-  // обработка отправки формы формы страницы (Register/Login)
-  function handlePageSubmit(inputEmail, inputPassword, conditionForLogin) {
+  const handleSignUpSubmit = (inputEmail, inputPassword) => {
     return (e) => {
       e.preventDefault();
-      setUserEmail(inputEmail);
-      setUserPassword(inputPassword);
+      // сохранить password и email в localStorage
+      localStorage.setItem("userPassword", inputPassword);
       localStorage.setItem("userEmail", inputEmail);
-      conditionForLogin === false
-        ? registerUser(inputEmail, inputPassword)
-        : authorizeUser(inputEmail, inputPassword);
+      setIsRenderLoading(true);
+      register(inputEmail, inputPassword)
+        .then((res) => {
+          if (res === 400) {
+            handleInfoTooltipPopupClick();
+            setIsValidPage("infoTooltipError");
+          } else {
+            handleInfoTooltipPopupClick();
+            setIsValidPage("infoTooltipOk");
+            onLogin();
+          }
+        })
+        .catch((error) => console.log(`${error}. Запрос не выполнен!`)) // вывести ошибку в консоль
+        .finally(() => {
+          setIsRenderLoading(false);
+        });
     };
-  }
+  };
+
+  // обработка отправки формы формы страницы Login
+  // авторизация пользователя
+  // проверка валидности токена
+  const handleSignInSubmit = (inputEmail, inputPassword) => {
+    return (e) => {
+      e.preventDefault();
+      // сохранить email в localStorage и удалить password
+      localStorage.removeItem("userPassword");
+      localStorage.setItem("userEmail", inputEmail);
+      setIsRenderLoading(true);
+      authorize(inputEmail, inputPassword)
+        .then((res) => {
+          // сохранить токен в localStorage
+          localStorage.setItem("jwt", res.token);
+          handleLogin();
+          // navigate(0);
+          onLogin();
+        })
+        .then(() => checkToken(localStorage.getItem("jwt")))
+        .then((res) => {
+          localStorage.setItem("userEmail", res.data.email);
+        })
+        .catch((error) => console.log(`${error}. Запрос не выполнен!`)) // вывести ошибку в консоль
+        .finally(() => {
+          setIsRenderLoading(false);
+        });
+    };
+  };
   // удалить карточку
   function handleCardDelete(card) {
     setIsDeletePopupOpen(!isDeletePopupOpen);
@@ -331,7 +348,6 @@ function App() {
         <Header
           textButton={textButtonHeader}
           loggedIn={loggedIn}
-          userEmail={userEmail}
           onLogin={onLogin}
           onRegister={onRegister}
           signOut={signOut}
@@ -366,13 +382,12 @@ function App() {
                 element={Register}
                 formTitleValue={formTitleValue}
                 setFormTitleValue={setFormTitleValue}
-                formButtonValue={formButtonValue}
-                setFormButtonValue={setFormButtonValue}
-                handleSubmit={handlePageSubmit}
-                userEmail={userEmail}
-                userPassword={userPassword}
-                onLogin={onLogin}
-                onRegister={onRegister}
+                formButtonValue={
+                  isRenderLoading ? "Регистрация..." : "Зарегистрироваться"
+                }
+                buttonSubmitSelector={"form__button-submit_type_register"}
+                handleSubmit={handleSignUpSubmit}
+                setResetForm={setResetForm}
               />
             }
           />
@@ -384,13 +399,10 @@ function App() {
                 element={Login}
                 formTitleValue={formTitleValue}
                 setFormTitleValue={setFormTitleValue}
-                formButtonValue={formButtonValue}
-                setFormButtonValue={setFormButtonValue}
-                handleSubmit={handlePageSubmit}
-                userEmail={userEmail}
-                userPassword={userPassword}
-                onLogin={onLogin}
-                onRegister={onRegister}
+                formButtonValue={isRenderLoading ? "Вход..." : "Войти"}
+                buttonSubmitSelector={""}
+                handleSubmit={handleSignInSubmit}
+                setResetForm={setResetForm}
               />
             }
           />
@@ -422,15 +434,31 @@ function App() {
           onAddNewCard={handleAddNewCard}
         />
 
-        <PopupWithForm
-          name="delete"
-          title="Вы уверены?"
-          textButton={isRenderLoading ? "Удаление..." : "Да"}
+        <Popup
           isOpen={isDeletePopupOpen}
+          name="delete"
           onClose={closeAllPopups}
-          onSubmit={handlePopupDeleteSubmit}
-          isValid={true}
-        />
+        >
+          <form
+            name={"popup-form_type_delete"}
+            className="popup__form"
+            onSubmit={handlePopupDeleteSubmit}
+            noValidate
+          >
+            <h3 className="popup__heading">Вы уверены?</h3>
+            <button
+              type="submit"
+              name="submit"
+              aria-label={`Кнопка отправки формы &quot;${
+                isRenderLoading ? "Удаление..." : "Да"
+              }&quot;`}
+              className="popup__submit indicator"
+              disabled={false}
+            >
+              {isRenderLoading ? "Удаление..." : "Да"}
+            </button>
+          </form>
+        </Popup>
 
         <EditAvatarPopup
           textButton={isRenderLoading ? "Создание..." : "Создать"}

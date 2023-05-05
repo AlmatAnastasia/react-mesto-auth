@@ -22,7 +22,7 @@ export default function Card({ card, onCardClick, onCardLike, onCardDelete }) {
       <img
         className="card__image indicator"
         src={`${card.link}`}
-        alt="Фотография места"
+        alt={`Фотография места &quot;${card.name}&quot;`}
         onClick={handleClick}
       />
       <div className="card__item">
