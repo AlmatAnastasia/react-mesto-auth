@@ -189,6 +189,10 @@ function App() {
     setIsDeletePopupOpen(false);
     setIsInfoTooltipPopupOpen(false);
   };
+  // эффект при монтировании
+  useEffect(() => {
+    setTextButtonHeader("Регистрация");
+  }, []);
   // Взаимодействие с сервером
   // добавить информацию о пользователе с сервера
   useEffect(() => {
