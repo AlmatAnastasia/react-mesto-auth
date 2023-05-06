@@ -40,15 +40,16 @@ function App() {
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [isRenderLoading, setIsRenderLoading] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false); // статус пользователя
+  const [userRegister, setUserRegister] = useState(false);
   const [textButtonHeader, setTextButtonHeader] = useState("");
   const [isValidPage, setIsValidPage] = useState("");
   const [formTitleValue, setFormTitleValue] = useState("");
   const [resetForm, setResetForm] = useState({});
   const navigate = useNavigate();
   // изменить статус пользователя (авторизация)
-  function handleLogin() {
+  const handleLogin = () => {
     setLoggedIn(true);
-  }
+  };
   // проверка наличия токена и его валидности
   const handleTokenCheck = () => {
     /* проверить, существует ли токен в хранилище браузера*/
@@ -58,9 +59,9 @@ function App() {
       checkToken(jwt)
         .then((res) => {
           if (res) {
-            setLoggedIn(true);
-            // перенаправить на страницу /
+            handleLogin();
             setTextButtonHeader("Выход");
+            // перенаправить на страницу /
             navigate("/", { replace: true });
           }
         })
@@ -68,56 +69,52 @@ function App() {
     }
   };
   // открыть/закрыть попапы edit, new-card, avatar, info-tooltip
-  function handleEditPopupClick() {
+  const handleEditPopupClick = () => {
     setIsEditPopupOpen(!isEditPopupOpen);
-  }
-  function handleNewCardPopupClick() {
+  };
+  const handleNewCardPopupClick = () => {
     setIsNewCardPopupOpen(!isNewCardPopupOpen);
-  }
-  function handleUpdateAvatarPopupClick() {
+  };
+  const handleUpdateAvatarPopupClick = () => {
     setIsUpdateAvatarPopupOpen(!isUpdateAvatarPopupOpen);
-  }
-  function handleInfoTooltipPopupClick() {
+  };
+  const handleInfoTooltipPopupClick = () => {
     setIsInfoTooltipPopupOpen(!isInfoTooltipPopupOpen);
-  }
+  };
   // открыть/закрыть попап image
-  function handleCardClick(data) {
+  const handleCardClick = (data) => {
     const { link, name } = data;
     setSelectedCard({ isPopupImageOpen: true, link: link, heading: name });
-  }
+  };
   // отправка попапа delete
-  function handlePopupDeleteSubmit(e) {
+  const handlePopupDeleteSubmit = (e) => {
     e.preventDefault();
     deleteOldCard(cardDelete);
-  }
+  };
   // переадресовать пользователя на страницу /sign-up
-  function onRegister() {
+  const onRegister = () => {
     resetForm.resetForm();
     setTextButtonHeader("Войти");
     setFormTitleValue("Регистрация");
     navigate("/sign-up", { replace: true });
-  }
-  // переадресовать пользователя на страницу /
-  function onLogin() {
+  };
+  // переадресовать пользователя на страницу /sign-in
+  const onLogin = () => {
     resetForm.resetForm();
-    if (loggedIn) {
-      setTextButtonHeader("Выход");
-      navigate("/", { replace: true });
-    } else {
-      setTextButtonHeader("Регистрация");
-      setFormTitleValue("Вход");
-      navigate("/sign-in", { replace: true });
-    }
-  }
+    setTextButtonHeader("Регистрация");
+    setFormTitleValue("Вход");
+    navigate("/sign-in", { replace: true });
+  };
   // удалить токен из localStorage
   // переадресовать пользователя на страницу /sign-in
-  function signOut() {
+  const signOut = () => {
     setLoggedIn(false);
     localStorage.removeItem("jwt");
     localStorage.removeItem("userEmail");
     setTextButtonHeader("Регистрация");
     navigate("/sign-in", { replace: true });
-  }
+  };
+
   // обработка отправки формы формы страницы Register
   // регистрация пользователя
   const handleSignUpSubmit = (inputEmail, inputPassword) => {
@@ -133,6 +130,7 @@ function App() {
             handleInfoTooltipPopupClick();
             setIsValidPage("infoTooltipError");
           } else {
+            setUserRegister(true);
             handleInfoTooltipPopupClick();
             setIsValidPage("infoTooltipOk");
             onLogin();
@@ -160,8 +158,9 @@ function App() {
           // сохранить токен в localStorage
           localStorage.setItem("jwt", res.token);
           handleLogin();
-          // navigate(0);
-          onLogin();
+          setTextButtonHeader("Выход");
+          // перенаправить на страницу /
+          navigate("/", { replace: true });
         })
         .then(() => checkToken(localStorage.getItem("jwt")))
         .then((res) => {
@@ -174,27 +173,26 @@ function App() {
     };
   };
   // удалить карточку
-  function handleCardDelete(card) {
+  const handleCardDelete = (card) => {
     setIsDeletePopupOpen(!isDeletePopupOpen);
     if (isDeletePopupOpen) {
       setIsRenderLoading(true);
     }
     setcardDelete(card);
-  }
+  };
   // закрыть все попапы
-  function closeAllPopups() {
+  const closeAllPopups = () => {
     setIsEditPopupOpen(false);
     setIsNewCardPopupOpen(false);
     setIsUpdateAvatarPopupOpen(false);
     setSelectedCard(false);
     setIsDeletePopupOpen(false);
     setIsInfoTooltipPopupOpen(false);
-  }
+  };
   // Взаимодействие с сервером
   // добавить информацию о пользователе с сервера
   useEffect(() => {
     // эффект при монтировании
-    setTextButtonHeader("Регистрация");
     // проверка наличия токена и его валидности
     handleTokenCheck();
     api
@@ -229,7 +227,7 @@ function App() {
       });
   }, []);
   // лайк/дизлайк
-  function handleCardLike(card) {
+  const handleCardLike = (card) => {
     const isLiked = card.likes.some((i) => i._id === currentUser.id);
     // отправить запрос в API и получить обновлённые данные карточки
     if (!isLiked) {
@@ -257,9 +255,9 @@ function App() {
           console.log(`${error}. Запрос не выполнен!`); // вывести ошибку в консоль
         });
     }
-  }
+  };
   // удалить карточку
-  function deleteOldCard(card) {
+  const deleteOldCard = (card) => {
     setIsRenderLoading(true);
     api
       .deleteCard(card._id)
@@ -274,9 +272,9 @@ function App() {
       .finally(() => {
         setIsRenderLoading(false);
       });
-  }
+  };
   // изменить собственную информацию (данные профиля) на сервере
-  function handleUpdateUser({ name, about }) {
+  const handleUpdateUser = ({ name, about }) => {
     setIsRenderLoading(true);
     api
       .editProfileInfo(name, about)
@@ -298,9 +296,9 @@ function App() {
       .finally(() => {
         setIsRenderLoading(false);
       });
-  }
+  };
   // добавить новую карточку на сервер
-  function handleAddNewCard({ name, link }) {
+  const handleAddNewCard = ({ name, link }) => {
     setIsRenderLoading(true);
     api
       .addCard(name, link)
@@ -316,9 +314,9 @@ function App() {
       .finally(() => {
         setIsRenderLoading(false);
       });
-  }
+  };
   // изменить собсвенную информацию (аватар пользователя)
-  function handleUpdateAvatar({ avatar }) {
+  const handleUpdateAvatar = ({ avatar }) => {
     setIsRenderLoading(true);
     api
       .editProfileAvatar(avatar)
@@ -340,7 +338,7 @@ function App() {
       .finally(() => {
         setIsRenderLoading(false);
       });
-  }
+  };
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -388,6 +386,8 @@ function App() {
                 buttonSubmitSelector={"form__button-submit_type_register"}
                 handleSubmit={handleSignUpSubmit}
                 setResetForm={setResetForm}
+                userRegister={userRegister}
+                setUserRegister={setUserRegister}
               />
             }
           />
@@ -403,6 +403,8 @@ function App() {
                 buttonSubmitSelector={""}
                 handleSubmit={handleSignInSubmit}
                 setResetForm={setResetForm}
+                userRegister={userRegister}
+                setUserRegister={setUserRegister}
               />
             }
           />

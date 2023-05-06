@@ -10,8 +10,12 @@ const Pages = ({ element: Component, ...props }) => {
   // валидация
   const { values, handleChange, errors, isValid, setValues, resetForm } =
     useFormAndValidation();
-  const inputEmail = values[inputEmailSelector];
-  const inputPassword = values[inputPasswordSelector];
+  const inputEmail = props.userRegister
+    ? localStorage.userEmail
+    : values[inputEmailSelector];
+  const inputPassword = props.userRegister
+    ? localStorage.userPassword
+    : values[inputPasswordSelector];
   const errorsInputEmail = errors[inputEmailSelector];
   const errorsInputPassword = errors[inputPasswordSelector];
   // наличие текста ошибки для каждого из полей
@@ -20,11 +24,10 @@ const Pages = ({ element: Component, ...props }) => {
     conditionForClassList(errorsInputPassword);
   // изменение данных при монтировании (авторизация/регистрация)
   useEffect(() => {
-    props.setResetForm({ resetForm });
     resetForm();
     setValues({});
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userPassword");
+    props.setUserRegister(false);
+    props.setResetForm({ resetForm });
     props.setFormTitleValue("Вход");
   }, []);
   // общие данные страниц авторизации и регистрации
@@ -44,9 +47,7 @@ const Pages = ({ element: Component, ...props }) => {
               conditionForClassListEmail && "form__input_type_error"
             }`}
             placeholder="Email"
-            value={
-              localStorage.userEmail ? localStorage.userEmail : inputEmail || ""
-            }
+            value={inputEmail || ""}
             onChange={handleChange}
             autoComplete="off"
             required
@@ -70,11 +71,7 @@ const Pages = ({ element: Component, ...props }) => {
             placeholder="Пароль"
             minLength="8"
             maxLength="16"
-            value={
-              localStorage.userPassword
-                ? localStorage.userPassword
-                : inputPassword || ""
-            }
+            value={inputPassword || ""}
             onChange={handleChange}
             autoComplete="new-password"
             required
