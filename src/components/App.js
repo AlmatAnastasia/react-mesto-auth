@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
-import Popup from "./Popup";
+import PopupWithForm from "./PopupWithForm";
 import AddNewCardPopup from "./AddNewCardPopup";
 import ImagePopup from "./ImagePopup";
 import InfoTooltip from "./InfoTooltip";
@@ -51,7 +51,7 @@ function App() {
     setLoggedIn(true);
   };
   // проверка наличия токена и его валидности
-  const handleTokenCheck = () => {
+  const handleTokenCheck = useCallback(() => {
     /* проверить, существует ли токен в хранилище браузера*/
     if (localStorage.getItem("jwt")) {
       // присвоить токен переменной jwt
@@ -67,7 +67,7 @@ function App() {
         })
         .catch((error) => console.log(`${error}. Запрос не выполнен!`)); // вывести ошибку в консоль
     }
-  };
+  }, [navigate]);
   // открыть/закрыть попапы edit, new-card, avatar, info-tooltip
   const handleEditPopupClick = () => {
     setIsEditPopupOpen(!isEditPopupOpen);
@@ -192,13 +192,13 @@ function App() {
   // эффект при монтировании
   useEffect(() => {
     setTextButtonHeader("Регистрация");
-  }, []);
+    // проверка наличия токена и его валидности
+    handleTokenCheck();
+  }, [handleTokenCheck]);
   // Взаимодействие с сервером
   // добавить информацию о пользователе с сервера
   useEffect(() => {
     // эффект при монтировании
-    // проверка наличия токена и его валидности
-    handleTokenCheck();
     api
       .getProfileInfo()
       .then((info) => {
@@ -440,31 +440,15 @@ function App() {
           onAddNewCard={handleAddNewCard}
         />
 
-        <Popup
-          isOpen={isDeletePopupOpen}
+        <PopupWithForm
           name="delete"
+          title="Вы уверены?"
+          textButton={isRenderLoading ? "Удаление..." : "Да"}
+          isOpen={isDeletePopupOpen}
           onClose={closeAllPopups}
-        >
-          <form
-            name={"popup-form_type_delete"}
-            className="popup__form"
-            onSubmit={handlePopupDeleteSubmit}
-            noValidate
-          >
-            <h3 className="popup__heading">Вы уверены?</h3>
-            <button
-              type="submit"
-              name="submit"
-              aria-label={`Кнопка отправки формы &quot;${
-                isRenderLoading ? "Удаление..." : "Да"
-              }&quot;`}
-              className="popup__submit indicator"
-              disabled={false}
-            >
-              {isRenderLoading ? "Удаление..." : "Да"}
-            </button>
-          </form>
-        </Popup>
+          onSubmit={handlePopupDeleteSubmit}
+          isValid={true}
+        />
 
         <EditAvatarPopup
           textButton={isRenderLoading ? "Создание..." : "Создать"}

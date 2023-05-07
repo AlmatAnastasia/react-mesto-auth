@@ -7,13 +7,23 @@ import {
 } from "../utils/utils.js";
 // общий компонент для авторизации и регистрации пользователя
 const Pages = ({ element: Component, ...props }) => {
+  const {
+    formTitleValue,
+    setFormTitleValue,
+    formButtonValue,
+    buttonSubmitSelector,
+    handleSubmit,
+    setResetForm,
+    userRegister,
+    setUserRegister,
+  } = props;
   // валидация
   const { values, handleChange, errors, isValid, setValues, resetForm } =
     useFormAndValidation();
-  const inputEmail = props.userRegister
+  const inputEmail = userRegister
     ? localStorage.userEmail
     : values[inputEmailSelector];
-  const inputPassword = props.userRegister
+  const inputPassword = userRegister
     ? localStorage.userPassword
     : values[inputPasswordSelector];
   const errorsInputEmail = errors[inputEmailSelector];
@@ -26,18 +36,15 @@ const Pages = ({ element: Component, ...props }) => {
   useEffect(() => {
     resetForm();
     setValues({});
-    props.setUserRegister(false);
-    props.setResetForm({ resetForm });
-    props.setFormTitleValue("Вход");
-  }, []);
+    setUserRegister(false);
+    setResetForm({ resetForm });
+    setFormTitleValue("Вход");
+  }, [resetForm, setValues, setUserRegister, setResetForm, setFormTitleValue]);
   // общие данные страниц авторизации и регистрации
   const pageElements = () => {
     return (
-      <form
-        className="form"
-        onSubmit={props.handleSubmit(inputEmail, inputPassword)}
-      >
-        <h1 className="form__title">{props.formTitleValue}</h1>
+      <form className="form" onSubmit={handleSubmit(inputEmail, inputPassword)}>
+        <h1 className="form__title">{formTitleValue}</h1>
         <div className="form__ceil">
           <input
             type="email"
@@ -87,15 +94,15 @@ const Pages = ({ element: Component, ...props }) => {
         <button
           type="submit"
           name="form-button-submit"
-          aria-label={`Кнопка действия &quot;${props.formButtonValue}&quot;`}
-          className={`form__button-submit ${props.buttonSubmitSelector} ${
+          aria-label={`Кнопка действия &quot;${formButtonValue}&quot;`}
+          className={`form__button-submit ${buttonSubmitSelector} ${
             isValid
               ? "indicator"
               : "form__button-submit_disabled indicator_disabled"
           }`}
           disabled={isValid ? false : true}
         >
-          {props.formButtonValue}
+          {formButtonValue}
         </button>
       </form>
     );
